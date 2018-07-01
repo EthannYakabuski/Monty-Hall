@@ -8,14 +8,21 @@
 (define goatLocation1 0)
 (define goatLocation2 0)
 (define goatToShow 0)
+(define doorOpened 0)
+(define score 0)
+(define cars 0)
+(define goats 0)
+(define gamesPlayed 0)
 (define doorsGraphics (cons '(1) (cons '(2) (cons '(3) '()))))
 
 ;main body
 (define (montyHall)
+   (set! gamesPlayed (+ gamesPlayed 1))
    (setDoors)
    (askPlayerToChooseDoor)
    (revealDoor)
    (switchDoors?)
+   (showOutcome)
   )
 
 
@@ -93,8 +100,6 @@
   (display doorsGraphics)(newline)
   )
   
-
-
 ;--------------------------------------------------------------------------------------
 
 
@@ -126,15 +131,89 @@
               (if (= carLocation 1) (set! playerChoice 2)))
       
         )
-  )
+  (MH-switchAccepted))
 
 (define (specialCaseSwitchDoor)
-
+  (cond ( (= playerChoice 1)
+          (if (eq? (car (cdr doorsGraphics)) 'Goat) (set! playerChoice 3))
+          (if (eq? (car (cdr (cdr doorsGraphics))) 'Goat) (set! playerChoice 2)))
+        ( (= playerChoice 2)
+          (if (eq? (car doorsGraphics) 'Goat) (set! playerChoice 3))
+          (if (eq? (car (cdr (cdr doorsGraphics))) 'Goat) (set! playerChoice 1)))
+        ( (= playerChoice 3)
+          (if (eq? (car doorsGraphics) 'Goat) (set! playerChoice 2))
+          (if (eq? (car (cdr doorsGraphics)) 'Goat) (set! playerChoice 1))))
   )
   
 ;--------------------------------------------------------------------------------------
 
 
+;Outcome Logic-------------------------------------------------------------------------
+(define (showOutcome)
+  (cond ( (= (- playerChoice 1) carLocation) (winner))
+        ( (= 1 1) (loser)))
+  (display "Cars Won:")
+  (display cars)(newline)
+
+  (display "Goats Won:")
+  (display goats)(newline)
+
+  (display "Score:")
+  (display score)(newline)
+
+  (display "Games Played:")
+  (display gamesPlayed)(newline)
+
+  (MH-playAgain)
+  (define playAgain (read))
+
+  (if (= playAgain 1) (reset))
+  (if (= playAgain 2) (closeGame))
+  
+)
+
+(define (reset)
+  (set! doorsGraphics (cons '(1) (cons '(2) (cons '(3) '()))))
+  (montyHall)
+  )
+  
+
+(define (winner)
+  (set! score (+ score 1))
+  (set! cars (+ cars 1))
+  (display "You won the vehicle, congratulations")(newline)
+  )
+
+(define (loser)
+  (set! score (- score 1))
+  (set! goats (+ goats 1))
+  (display "You won a goat, his name is Billy")(newline)
+  )
+
+(define (closeGame)
+  (display "Cars Won:")
+  (display cars)(newline)
+
+  (display "Goats Won:")
+  (display goats)(newline)
+
+  (display "Score:")
+  (display score)(newline)
+
+  (display "Games Played:")
+  (display gamesPlayed)(newline)
+
+  (display "Win Percentage: ")
+  (define winPercentage (/ cars gamesPlayed))
+  (display winPercentage)(newline)
+
+  (display "GoodBye")(newline)
+  
+  )
+
+;--------------------------------------------------------------------------------------
+
+ 
 ;MontyHall speaking logic
 ;--------------------------------------------------------------------------------------
 (define (MH-intro)
@@ -148,6 +227,14 @@
 
 (define (MH-switch)
   (display "Would you want to switch doors? (1) - Yes  /  (2) - No ")(newline)
+  )
+
+(define (MH-switchAccepted)
+  (display "There was only the one door left to choose from! We have switched you automatically")(newline)
+  )
+
+(define (MH-playAgain)
+  (display "I quite enjoy your company competitor, shall we play again? (1) - Yes  / (2) - No ")(newline)
   )
 ;--------------------------------------------------------------------------------------
 
