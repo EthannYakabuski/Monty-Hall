@@ -190,6 +190,7 @@
   (display "You won a goat, his name is Billy")(newline)
   )
 
+
 (define (closeGame)
   (display "Cars Won:")
   (display cars)(newline)
