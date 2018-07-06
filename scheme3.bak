@@ -1,0 +1,51 @@
+(load "developerMontyHall.rkt")
+
+
+(define (scheme3Iter times currIndex)
+  (set! localPlays (+ 1 localPlays))
+  (define flip (flipCoin))
+  (display "Flipped: ")
+  (display flip)(newline)
+  (define outcome 0)
+  (set! outcome (dev-MontyHall 1 flip 1))
+  (display "Score outcome: ")
+  (display outcome)(newline)
+  (cond ( (= outcome -1) (loss))
+  (else (eq? outcome 1) (win)))
+
+  (if (= times currIndex) (scheme3Done)
+      (scheme3Iter times (+ 1 currIndex))))
+
+(define (scheme3 times)
+      (scheme3Iter times 0))
+
+(define (loss)
+  (display "loss")(newline)
+  (set! localGoats (+ localGoats 1))
+  (set! localScore (- localScore 1)))
+
+(define (win)
+  (display "win")(newline)
+  (set! localCars (+ localCars 1))
+  (set! localScore (+ localScore 1)))
+
+(define (scheme3Done)
+  (display "Scheme3 Done")(newline)
+  (display localPlays)
+  (display localCars)
+  (display localGoats)
+  (display localScore)
+
+  ;(set! localPlays 0)
+  ;(set! localCars 0)
+  ;(set! localGoats 0)
+  ;(set! localScore 0)
+  )
+
+
+
+(define (flipCoin)
+  (define ran (random 2))
+  (cond ( (= ran 0) 0)
+        ( (= ran 1) 1)))
+

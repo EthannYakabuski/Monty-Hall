@@ -14,14 +14,86 @@
 (define gamesPlayed 0)
 (define doorsGraphics (cons '(1) (cons '(2) (cons '(3) '()))))
 
+(define scoreToReturn 0)
+
+
+(define localPlays 0)
+(define localCars 0)
+(define localGoats 0)
+(define localScore 0)
+
 ;doorChoice : 1 , 2 , 3
 ;switchChoice: 0: No , 1: Yes
 ;playTimes: amount of times to play monty-hall with inputted choices
 (define (dev-MontyHall doorChoice switchChoice playTimes)
   (set! gamesPlayed (+ gamesPlayed 1))
-  (if (= gamesPlayed playTimes) (done))
-  (if (< gamesPlayed playTimes) (continue doorChoice switchChoice playTimes))
+  (cond ( (= gamesPlayed playTimes) (done))
+  (else (< gamesPlayed playTimes) (continue doorChoice switchChoice playTimes)))
+  scoreToReturn)
+
+;schemes
+
+;choose door one
+;don't switch doors
+(define (scheme1 times)
+  (dev-MontyHall 1 0 (+ 1 times)))
+
+;choose door one
+;switch doors
+(define (scheme2 times)
+  (dev-MontyHall 1 1 (+ 1 times)))
+
+  
+(define (scheme3Iter times currIndex)
+  (set! localPlays (+ 1 localPlays))
+  (define flip (flipCoin))
+  (display "Flipped: ")
+  (display flip)(newline)
+  (define outcome 0)
+  (set! outcome (dev-MontyHall 1 flip 1))
+  (display "Score outcome: ")
+  (display outcome)(newline)
+  (cond ( (= outcome -1) (loss))
+  (else (eq? outcome 1) (win)))
+
+  (if (= times currIndex) (scheme3Done)
+      (scheme3Iter times (+ 1 currIndex))))
+
+(define (scheme3 times)
+      (scheme3Iter times 0))
+
+(define (loss)
+  (display "loss")(newline)
+  (set! localGoats (+ localGoats 1))
+  (set! localScore (- localScore 1)))
+
+(define (win)
+  (display "win")(newline)
+  (set! localCars (+ localCars 1))
+  (set! localScore (+ localScore 1)))
+
+(define (scheme3Done)
+  (display "Scheme3 Done")(newline)
+  (display localPlays)
+  (display localCars)
+  (display localGoats)
+  (display localScore)
+
+  ;(set! localPlays 0)
+  ;(set! localCars 0)
+  ;(set! localGoats 0)
+  ;(set! localScore 0)
   )
+
+
+
+(define (flipCoin)
+  (define ran (random 2))
+  (cond ( (= ran 0) 0)
+        ( (= ran 1) 1)))
+
+
+
 
 (define (done)
   (set! playerChoice 0)
@@ -29,6 +101,7 @@
   (set! carLocation -1)
   (set! cars 0)
   (set! goats 0)
+  (set! scoreToReturn score)
   (set! score 0)
   (set! doors '())
   (set! goatLocation1 0)
@@ -36,7 +109,8 @@
   (set! goatToShow 0)
   (set! doorOpened 0)
   (set! doorsGraphics (cons '(1) (cons '(2) (cons '(3) '()))))
-  (display "You are done")(newline))
+  ;(display "You are done")(newline)
+ )
 
 (define (continue doorChoice switchChoice playTimes)
   (setDoors)
@@ -50,19 +124,19 @@
 (define (showOutcome doorChoice switchChoice playTimes)
   (cond ( (= (- playerChoice 1) carLocation) (winner))
         ( (= 1 1) (loser)))
-  (display "Cars Won:")
-  (display cars)(newline)
+  ;(display "Cars Won:")
+  ;(display cars)(newline)
 
-  (display "Goats Won:")
-  (display goats)(newline)
+  ;(display "Goats Won:")
+  ;(display goats)(newline)
 
-  (display "Score:")
-  (display score)(newline)
+  ;(display "Score:")
+  ;(display score)(newline)
 
-  (display "Games Played:")
-  (display gamesPlayed)(newline)
+  ;(display "Games Played:")
+  ;(display gamesPlayed)(newline)
 
-  (define playAgain (> playTimes gamesPlayed))
+  (define playAgain (>= playTimes gamesPlayed))
 
   (if (eq? playAgain #t) (set! doorsGraphics (cons '(1) (cons '(2) (cons '(3) '())))))
   (cond ( (eq? playAgain #t) (dev-MontyHall doorChoice switchChoice playTimes))
@@ -71,36 +145,38 @@
 )
 
 (define (closeGame)
-  (display "Cars Won:")
-  (display cars)(newline)
+  ;(display "Cars Won:")
+  ;(display cars)(newline)
 
-  (display "Goats Won:")
-  (display goats)(newline)
-
-  (display "Score:")
-  (display score)(newline)
-
-  (display "Games Played:")
-  (display gamesPlayed)(newline)
-
-  (display "Win Percentage: ")
-  (define winPercentage (/ cars gamesPlayed))
-  (display winPercentage)(newline)
-
-  (display "GoodBye")(newline)
+  ;(display "Goats Won:")
+  ;(display goats)(newline)
   
-  )
+  ;(display "Score:")
+  ;(display score)(newline)
+
+  ;(display "Games Played:")
+  ;(display gamesPlayed)(newline)
+
+  ;(display "Win Percentage: ")
+  ;(define winPercentage (/ cars gamesPlayed))
+  ;(display winPercentage)(newline)
+
+  ;(display "GoodBye")(newline)
+  (display "close")(newline)
+)
 
 (define (winner)
   (set! score (+ score 1))
   (set! cars (+ cars 1))
-  (display "You won the vehicle, congratulations")(newline)
+
+  ;(display "You won the vehicle, congratulations")(newline)
   )
 
 (define (loser)
   (set! score (- score 1))
   (set! goats (+ goats 1))
-  (display "You won a goat, his name is Billy")(newline)
+  
+  ;(display "You won a goat, his name is Billy")(newline)
   )
 
 ;reveals a door, does not show graphics like in the user input version
@@ -132,9 +208,10 @@
 ;sets the players switch choice to the inputted argument
 (define (switchDoors? switchChoice)
   (set! playerSwitchChoice switchChoice)
-  (if (= playerSwitchChoice 1) (switchDoors)))
+  (if (eq? playerSwitchChoice 1) (switchDoors)))
 
 (define (switchDoors)
+  ;(display "switching doors")(newline)
   (cond ( (= (- playerChoice 1) carLocation) (specialCaseSwitchDoor))
         ( (= playerChoice 1)
               (if (= carLocation 1) (set! playerChoice 2))
@@ -205,11 +282,22 @@
   )
 
 
-(display "Choose door one, don't switch and play five times")(newline)
-(dev-MontyHall 1 0 5)
+(display "Choose door one, don't switch and play 1000 times")(newline)
+(define scheme1Score (scheme1 1000))
+(display "Scheme 1 score: ----------------------------------------------------------------------------------")(newline)
+(display scheme1Score)(newline)
 
 (set! gamesPlayed 0)
 
-(display "Choose door one, switch and play five times")(newline)
-(dev-MontyHall 1 1 5)
+(display "Choose door one, switch and play 1000 times")(newline)
+(define scheme2Score (scheme2 1000))
+(display "Scheme 2 score: -----------------------------------------------------------------------------------")(newline)
+(display scheme2Score)(newline)
+
+
+(set! gamesPlayed 0)
+
+;(display "Choose door one, flip coin to determine if to switch each time asked")(newline)
+;(scheme3 5)
+
 
